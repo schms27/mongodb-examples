@@ -1,0 +1,6 @@
+name: mongodb-demo
+channels:
+  - conda-forge
+dependencies:
+  - pymongo==3.12.0
+  - python-dotenv==1.0.0
