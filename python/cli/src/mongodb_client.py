@@ -18,9 +18,11 @@ class Client:
         self.client = pymongo.MongoClient(f"mongodb://{user}:{password}@localhost:27000")
 
     def setDatabase(self, databaseName="test-database"):
+        print(f"Using database: {databaseName}")
         self.database = self.client[databaseName]
 
     def setCollection(self, collectionName="test-collection"):
+        print(f"Using collection: {collectionName}")
         self.collection = self.database[collectionName]
 
     def writeObject(self, object):

@@ -34,12 +34,17 @@ docker-compose --env-file ./.env up -d
 
 # Simple CRUD Operations (CLI)
 
+## Set Database and collection
+
+To define on which db and collection to work, we can use the CLI-Arguments --database/-d and --collection/-c. If undefined, the default values of "test-database" and "test-collection" will be used.
+
 Here are some examples how to perform various database operations using the python cli:
 
 ## Create
 
 ```ps
 python .\python\cli\src\main.py --object '{"this":"is a test","some":"data"}' write-object
+python .\python\cli\src\main.py -d new-db -c new-collection -o '{"this":"is another test","some":"different data"}' write-object
 ```
 
 ## Read All (List)
