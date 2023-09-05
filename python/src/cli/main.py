@@ -30,7 +30,7 @@ if args.collection:
 if args.command == "write-object":
     obj = {"hello":"world"}
     if args.object:
-        obj = args.object
+        obj = loads(args.object)
     new_id = client.writeObject(obj)
     print(f"Inserted ID: {new_id}")
 
@@ -44,14 +44,14 @@ elif args.command == "update-object":
     obj = {"hello":"world"}
     obj_filter = {};
     if args.object:
-        obj = args.object
+        obj = loads(args.object)
     if args.filter:
-        obj_filter = args.filter
+        obj_filter = loads(args.filter)
     client.updateObject(obj_filter, obj)
 
 elif args.command == "delete-objects":
     obj_filter = {};
     if args.filter:
-        obj_filter = args.filter
+        obj_filter = loads(args.filter)
     deletedCount = client.deleteObjects(obj_filter)
     print(f"Deleted '{deletedCount}' documents")
