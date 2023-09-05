@@ -1,3 +1,5 @@
+# Setup
+
 ## Creating a new environment
 
 ```
@@ -64,3 +66,14 @@ python .\python\cli\src\main.py --filter '{"this":"is something else"}' --object
 ```ps
 python .\python\cli\src\main.py --filter '{"this":"is something else"}' delete-objects
 ```
+
+# REST with FastAPI and Swagger
+
+Starting a local server:
+
+```ps
+cd ./python/rest_api/src/
+python -m uvicorn main:app --reload
+```
+
+Go to [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to see the swagger(openAPI) page.
