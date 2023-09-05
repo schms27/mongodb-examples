@@ -1,7 +1,7 @@
 import pymongo
 import os
 from dotenv import load_dotenv
-import json
+from bson.json_util import dumps, loads
 
 load_dotenv()
 
@@ -26,26 +26,24 @@ class Client:
         self.collection = self.database[collectionName]
 
     def writeObject(self, object):
-        data=json.loads(object)
-        print(f"Inserting object: {data}")
+        data=loads(dumps(object))
         result = self.collection.insert_one(data)
-        print(f"Inserted ID: {result.inserted_id}")
+        return str(result.inserted_id)
 
     def listObjects(self):
-        results = self.collection.find()
-        print("Found the following objects:")
-        for res in results:
-            print(res)
+        return loads(dumps(self.collection.find()))
+    
+    def getObject(self, obj_filter):
+        return loads(dumps(self.collection.find_one(obj_filter)))
 
-    def updateObject(self, obj_filter, object):
-        update_obj = f'{{"$set":{object},"$currentDate":{{"lastUpdated":true}}}}'
+    def updateObject(self, obj_filter, obj):
+        update_obj = {"$set":obj,"$currentDate":{"lastUpdated":True}}
+        data=loads(dumps(update_obj))
 
-        data=json.loads(update_obj)
-        filter_data=json.loads(obj_filter)
-        result = self.collection.update_one(filter_data, data)
+        result = self.collection.update_one(obj_filter, data)
         print(f"Found '{result.matched_count}' matches, updated '{result.modified_count}'")
+        return result.modified_count
 
     def deleteObjects(self, obj_filter):
-        filter_data=json.loads(obj_filter)
-        result = self.collection.delete_many(filter_data)
-        print(f"Deleted '{result.deleted_count}' documents")
+        result = self.collection.delete_many(obj_filter)
+        return result.deleted_count

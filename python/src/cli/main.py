@@ -1,7 +1,7 @@
 import sys
 import os
 import argparse
-from pathlib import Path
+from bson.json_util import dumps, loads
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
@@ -31,10 +31,14 @@ if args.command == "write-object":
     obj = {"hello":"world"}
     if args.object:
         obj = args.object
-    client.writeObject(obj)
+    new_id = client.writeObject(obj)
+    print(f"Inserted ID: {new_id}")
 
 elif args.command == "list-objects":
-    client.listObjects()
+    objects = client.listObjects()
+    print(f"Found the following objects: {objects}")
+    json_o = dumps(list(objects))
+    print(f"JSON: {json_o}")
 
 elif args.command == "update-object":
     obj = {"hello":"world"}
@@ -49,4 +53,5 @@ elif args.command == "delete-objects":
     obj_filter = {};
     if args.filter:
         obj_filter = args.filter
-    client.deleteObjects(obj_filter)
+    deletedCount = client.deleteObjects(obj_filter)
+    print(f"Deleted '{deletedCount}' documents")
