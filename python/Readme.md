@@ -45,26 +45,26 @@ Here are some examples how to perform various database operations using the pyth
 ## Create
 
 ```ps
-python .\python\cli\src\main.py --object '{"this":"is a test","some":"data"}' write-object
-python .\python\cli\src\main.py -d new-db -c new-collection -o '{"this":"is another test","some":"different data"}' write-object
+python .\python\src\cli\main.py --object '{"this":"is a test","some":"data"}' write-object
+python .\python\src\cli\main.py -d new-db -c new-collection -o '{"this":"is another test","some":"different data"}' write-object
 ```
 
 ## Read All (List)
 
 ```ps
-python .\python\cli\src\main.py  list-objects
+python .\python\src\cli\main.py  list-objects
 ```
 
 ## Update
 
 ```ps
-python .\python\cli\src\main.py --filter '{"this":"is something else"}' --object   {"andd":"updated_5"}' update-object
+python .\python\src\cli\main.py --filter '{"this":"is something else"}' --object   '{"andd":"updated_5"}' update-object
 ```
 
 ## Delete
 
 ```ps
-python .\python\cli\src\main.py --filter '{"this":"is something else"}' delete-objects
+python .\python\src\cli\main.py --filter '{"this":"is something else"}' delete-objects
 ```
 
 # REST with FastAPI and Swagger
@@ -72,7 +72,7 @@ python .\python\cli\src\main.py --filter '{"this":"is something else"}' delete-o
 Starting a local server:
 
 ```ps
-cd ./python/rest_api/src/
+cd ./python/src/api/
 python -m uvicorn main:app --reload
 ```
 

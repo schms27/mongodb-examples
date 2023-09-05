@@ -1,6 +1,11 @@
+import sys
+import os
 import argparse
 from pathlib import Path
-from mongodb_client import Client
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+from lib.mongodb_client import Client
 
 parser = argparse.ArgumentParser(prog='main.py', description='This is a simple CLI to perform CRUD-Operations against a MongoDB instance')
 
