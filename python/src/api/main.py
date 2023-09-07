@@ -5,7 +5,9 @@ from bson.json_util import loads, dumps
 
 import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), './')))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
 from lib.mongodb_client import Client
 from mapper import create_dto, create_entity
 

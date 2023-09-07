@@ -7,6 +7,10 @@ load_dotenv()
 
 user = os.getenv('MONGO_ROOT_USER')
 password = os.getenv('MONGO_ROOT_PASSWORD')
+connection_str = f"mongodb://{user}:{password}@localhost:27000"
+
+if os.getenv("MONGO_CONNECTION_STRING") is not None:
+    connection_str = os.getenv("MONGO_CONNECTION_STRING")
 
 class Client:
     def __init__(self) -> None:
@@ -15,7 +19,7 @@ class Client:
         self.setCollection()
 
     def connect(self):
-        self.client = pymongo.MongoClient(f"mongodb://{user}:{password}@localhost:27000")
+        self.client = pymongo.MongoClient(connection_str)
 
     def setDatabase(self, databaseName="test-database"):
         print(f"Using database: {databaseName}")

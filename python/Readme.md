@@ -77,3 +77,35 @@ python -m uvicorn main:app --reload
 ```
 
 Go to [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) to see the swagger(openAPI) page.
+
+# Move all to Docker
+
+## Preparations
+
+Lock packages for linux:
+
+```ps
+conda install --channel=conda-forge --name=base conda-lock
+conda-lock -p linux-64 -f environment.yml -k explicit --filename-template 'environment-{platform}.lock'
+```
+
+## Docker Compose
+
+Start stack:
+
+```ps
+cd ./python
+docker-compose up -d
+```
+
+Stop stack:
+
+```ps
+docker-compose down
+```
+
+Force rebuild:
+
+```ps
+docker-compose build
+```

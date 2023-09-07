@@ -1,10 +1,10 @@
 version: "3.3"
 name: mongo-db-test
 services:
-  : image: mongo:7.0.0
+  mongodb.service:
+    image: mongo:7.0.0
     container_name: mongodb
     restart: unless-stopped
-    #command: mongod --auth
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -25,12 +25,8 @@ services:
     environment:
       ME_CONFIG_MONGODB_SERVER: mongodb.service
       ME_CONFIG_MONGODB_PORT: 27017
-      #ME_CONFIG_MONGODB_ENABLE_ADMIN: true
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USER}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
-      #ME_CONFIG_MONGODB_AUTH_DATABASE: admin
-      #ME_CONFIG_MONGODB_AUTH_USERNAME: ${MONGO_ROOT_USER}
-      #ME_CONFIG_MONGODB_AUTH_PASSWORD: ${MONGO_ROOT_PASSWORD}
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: test12345
     networks:
@@ -41,6 +37,17 @@ services:
       - mongodbdata:/data/db
     depends_on:
       - mongodb.service
+
+  python.fastapi.service:
+    image: schms27/python-fastapi-mongo
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      MONGO_CONNECTION_STRING: ${MONGO_CONNECTION_STRING}
+    networks:
+      - mongo-backend
+    ports:
+      - 8000:8000
 
 networks:
   mongo-backend:

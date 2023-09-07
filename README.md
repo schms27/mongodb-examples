@@ -9,5 +9,3 @@ A collection of some examples on how to use mongodb with a number of different l
 - HDF5
 
 - Grafana
-
-%APPDATA%\Microsoft\UserSecrets\222d7f91-40ef-4dbd-92cd-40ee56000ddc\secrets.json
