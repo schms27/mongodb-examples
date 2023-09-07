@@ -3,6 +3,8 @@
 using Mongodb_Rest_API.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using MongoDB.Bson;
+using System.Text;
 
 public class BooksService
 {
@@ -16,6 +18,9 @@ public class BooksService
 
         var mongoDatabase = mongoClient.GetDatabase(
             bookStoreDatabaseSettings.Value.DatabaseName);
+
+        bool isMongoLive = mongoDatabase.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+        if (!isMongoLive) throw new Exception("Database Connection failed");
 
         _booksCollection = mongoDatabase.GetCollection<Book>(
             bookStoreDatabaseSettings.Value.BooksCollectionName);

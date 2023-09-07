@@ -6,7 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.Configure<DatabaseSettings>(
-    builder.Configuration.GetSection("BookStoreDatabase"));
+    builder.Configuration.GetSection("BookStoreDatabase")
+    );
 
 builder.Services.AddSingleton<BooksService>();
 
@@ -44,6 +45,14 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast")
+.WithOpenApi();
+
+
+//TODO: The problem seems to be the connection to the mongodb docker container... some networking stuff i guess
+app.MapGet("/books", async (BooksService service) => await service.GetAsync())
+.WithOpenApi();
+
+app.MapPost("/books", async (Book book, BooksService service) => await service.CreateAsync(book))
 .WithOpenApi();
 
 app.Run();
