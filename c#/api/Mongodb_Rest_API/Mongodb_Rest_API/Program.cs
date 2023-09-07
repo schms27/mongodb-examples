@@ -27,32 +27,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
-
-//TODO: The problem seems to be the connection to the mongodb docker container... some networking stuff i guess
 app.MapGet("/books", async (BooksService service) => await service.GetAsync())
 .WithOpenApi();
 
-app.MapPost("/books", async (Book book, BooksService service) => await service.CreateAsync(book))
+app.MapGet("/book/{id}", async (string id, BooksService service) => await service.GetAsync(id))
+.WithOpenApi();
+
+app.MapPost("/book", async (Book book, BooksService service) => await service.CreateAsync(book))
+.WithOpenApi();
+
+app.MapPut("/book/{id}", async (string id, Book book, BooksService service) => await service.UpdateAsync(id, book))
+.WithOpenApi();
+
+app.MapDelete("/book/{id}", async (string id, BooksService service) => await service.RemoveAsync(id))
 .WithOpenApi();
 
 app.Run();
