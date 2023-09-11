@@ -2,6 +2,9 @@ import pymongo
 import os
 from dotenv import load_dotenv
 from bson.json_util import dumps, loads
+from bson.objectid import ObjectId
+import gridfs
+import h5py
 
 load_dotenv()
 
@@ -24,10 +27,14 @@ class Client:
     def setDatabase(self, databaseName="test-database"):
         print(f"Using database: {databaseName}")
         self.database = self.client[databaseName]
+        self.initGridFS()
 
     def setCollection(self, collectionName="test-collection"):
         print(f"Using collection: {collectionName}")
         self.collection = self.database[collectionName]
+
+    def initGridFS(self):
+        self.fs = gridfs.GridFS(self.database)
 
     def writeObject(self, object):
         data=loads(dumps(object))
@@ -51,3 +58,11 @@ class Client:
     def deleteObjects(self, obj_filter):
         result = self.collection.delete_many(obj_filter)
         return result.deleted_count
+    
+    def writeFile(self, data, filename=None):
+        if filename is not None:
+            return str(self.fs.put(data, filename=filename))
+        return str(self.fs.put(data))
+    
+    def readFile(self, id:str):
+        return self.fs.get(ObjectId(id))

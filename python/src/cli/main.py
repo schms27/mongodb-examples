@@ -9,16 +9,19 @@ from lib.mongodb_client import Client
 
 parser = argparse.ArgumentParser(prog='main.py', description='This is a simple CLI to perform CRUD-Operations against a MongoDB instance')
 
-parser.add_argument("command", help="the command to perform, must be one of: [write-object, list-objects, update-object, delete-objects]")
+parser.add_argument("command", help="the command to perform, must be one of: [write-object, list-objects, update-object, delete-objects, write-file, read-file]")
 parser.add_argument("-d", "--database", help="The name of the database to use")
 parser.add_argument("-c", "--collection", help="The name of the collection to use")
 parser.add_argument("-o", "--object", help="The object to store or manipulate, format as JSON, ie: --object '{'this':'is a test','some':'data'}'" )
 parser.add_argument("-f", "--filter", help="Used to match a certain document when updating or deleting, ie: --filter {'this':'is something else'}" )
-
+parser.add_argument("-i", "--id", help="The id of the document or file to retrieve" )
+parser.add_argument("-p", "--path", help="The path to the file" )
 
 args = parser.parse_args()
 
 client = Client()
+
+OUTDIR = "./tmp"
 
 if args.database:
     client.setDatabase(args.database)
@@ -33,6 +36,31 @@ if args.command == "write-object":
         obj = loads(args.object)
     new_id = client.writeObject(obj)
     print(f"Inserted ID: {new_id}")
+
+elif args.command == "write-file":
+    filename = None
+    if args.path:
+        data = open(args.path, "rb").read()
+        _, filename = os.path.split(args.path)
+    elif args.object:
+        data = args.object
+    new_id = client.writeFile(data, filename)
+    print(f"Inserted file ID: {new_id}")
+
+elif args.command == "read-file":
+    if args.id:
+        file = client.readFile(args.id)
+        data = file.read()
+        print(f"Got file: {file.filename}, size: {file.length}")
+        if file.filename is not None:
+            if not os.path.exists(OUTDIR):
+                os.makedirs(OUTDIR)
+            target_path = os.path.join(OUTDIR, file.filename)
+            newFile = open(target_path, "wb")
+            newFile.write(data)
+            print(f"Saved file to: {target_path}")
+        else:
+            print(f"Data: {data}")
 
 elif args.command == "list-objects":
     objects = client.listObjects()
