@@ -10,12 +10,37 @@ services:
     ports:
       - 3000:3000
 
+  mongodb-exporter:
+    image: percona/mongodb_exporter:0.39.0
+    container_name: mongodb-exporter
+    restart: unless-stopped
+    networks:
+      - backend
+    ports:
+      - 9216:9216
+    environment:
+      - MONGODB_URI=${MONGO_CONNECTION_STRING}
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: prometheus
+    restart: unless-stopped
+    networks:
+      - backend
+    ports:
+      - 9090:9090
+    environment:
+      - MONGODB_URI=${MONGO_CONNECTION_STRING}
+    volumes:
+      - ./prometheus/data:/etc/prometheus/
+
 networks:
   backend:
-    driver: bridge
+    name: mongo-db-test_mongo-backend
+    external: true
 
 volumes:
   mongodbdata:
     driver: local
-  appdata:
+  prometheus-data:
     driver: local
