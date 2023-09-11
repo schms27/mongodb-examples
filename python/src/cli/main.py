@@ -16,26 +16,33 @@ parser.add_argument("-o", "--object", help="The object to store or manipulate, f
 parser.add_argument("-f", "--filter", help="Used to match a certain document when updating or deleting, ie: --filter {'this':'is something else'}" )
 parser.add_argument("-i", "--id", help="The id of the document or file to retrieve" )
 parser.add_argument("-p", "--path", help="The path to the file" )
+parser.add_argument("-v", "--verbose", default=False, action='store_true')
 
 args = parser.parse_args()
 
-client = Client()
+client = Client(args.verbose)
 
 OUTDIR = "./tmp"
 
+def output(value, verbose_value):
+    if args.verbose:
+        print(verbose_value)
+    else:
+        print(value)
+
 if args.database:
-    client.setDatabase(args.database)
+    client.setDatabase(args.verbose, args.database)
     client.setCollection()
 
 if args.collection:
-    client.setCollection(args.collection)
+    client.setCollection(args.verbose, args.collection)
 
 if args.command == "write-object":
     obj = {"hello":"world"}
     if args.object:
         obj = loads(args.object)
     new_id = client.writeObject(obj)
-    print(f"Inserted ID: {new_id}")
+    output(new_id, f"Inserted ID: {new_id}")
 
 elif args.command == "write-file":
     filename = None
@@ -45,28 +52,30 @@ elif args.command == "write-file":
     elif args.object:
         data = args.object
     new_id = client.writeFile(data, filename)
-    print(f"Inserted file ID: {new_id}")
+    output(new_id, f"Inserted file ID: {new_id}")
 
 elif args.command == "read-file":
     if args.id:
         file = client.readFile(args.id)
         data = file.read()
-        print(f"Got file: {file.filename}, size: {file.length}")
+        if args.verbose:
+            print(f"Got file: {file.filename}, size: {file.length}")
         if file.filename is not None:
             if not os.path.exists(OUTDIR):
                 os.makedirs(OUTDIR)
             target_path = os.path.join(OUTDIR, file.filename)
             newFile = open(target_path, "wb")
             newFile.write(data)
-            print(f"Saved file to: {target_path}")
+            output(target_path, f"Saved file to: {target_path}")
         else:
-            print(f"Data: {data}")
+            output(data, f"Data: {data}")
 
 elif args.command == "list-objects":
     objects = client.listObjects()
-    print(f"Found the following objects: {objects}")
+    if args.verbose:
+        print(f"Found the following objects: {objects}")
     json_o = dumps(list(objects))
-    print(f"JSON: {json_o}")
+    output(json_o, f"JSON: {json_o}")
 
 elif args.command == "update-object":
     obj = {"hello":"world"}
@@ -82,4 +91,4 @@ elif args.command == "delete-objects":
     if args.filter:
         obj_filter = loads(args.filter)
     deletedCount = client.deleteObjects(obj_filter)
-    print(f"Deleted '{deletedCount}' documents")
+    output(deletedCount, f"Deleted '{deletedCount}' documents")

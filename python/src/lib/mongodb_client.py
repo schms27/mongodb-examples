@@ -16,21 +16,23 @@ if os.getenv("MONGO_CONNECTION_STRING") is not None:
     connection_str = os.getenv("MONGO_CONNECTION_STRING")
 
 class Client:
-    def __init__(self) -> None:
+    def __init__(self, verbose=False) -> None:
         self.connect()
-        self.setDatabase()
-        self.setCollection()
+        self.setDatabase(verbose)
+        self.setCollection(verbose)
 
     def connect(self):
         self.client = pymongo.MongoClient(connection_str)
 
-    def setDatabase(self, databaseName="test-database"):
-        print(f"Using database: {databaseName}")
+    def setDatabase(self, verbose, databaseName="test-database"):
+        if verbose:
+            print(f"Using database: {databaseName}")
         self.database = self.client[databaseName]
         self.initGridFS()
 
-    def setCollection(self, collectionName="test-collection"):
-        print(f"Using collection: {collectionName}")
+    def setCollection(self, verbose, collectionName="test-collection"):
+        if verbose:
+            print(f"Using collection: {collectionName}")
         self.collection = self.database[collectionName]
 
     def initGridFS(self):
