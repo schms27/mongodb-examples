@@ -8,8 +8,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 from lib.mongodb_client import Client
 
 parser = argparse.ArgumentParser(prog='main.py', description='This is a simple CLI to perform CRUD-Operations against a MongoDB instance')
-
-parser.add_argument("command", help="the command to perform, must be one of: [write-object, list-objects, update-object, delete-objects, write-file, read-file]")
+parser.add_argument("command", help="the command to perform, must be one of: [write-object, list-objects, update-object, delete-objects, write-file, read-file, create-ts-collection]")
 parser.add_argument("-d", "--database", help="The name of the database to use")
 parser.add_argument("-c", "--collection", help="The name of the collection to use")
 parser.add_argument("-o", "--object", help="The object to store or manipulate, format as JSON, ie: --object '{'this':'is a test','some':'data'}'" )
@@ -17,6 +16,7 @@ parser.add_argument("-f", "--filter", help="Used to match a certain document whe
 parser.add_argument("-i", "--id", help="The id of the document or file to retrieve" )
 parser.add_argument("-p", "--path", help="The path to the file" )
 parser.add_argument("-v", "--verbose", default=False, action='store_true')
+parser.add_argument("-n", "--name", help="A named argument")
 
 args = parser.parse_args()
 
@@ -32,7 +32,7 @@ def output(value, verbose_value):
 
 if args.database:
     client.setDatabase(args.verbose, args.database)
-    client.setCollection()
+    client.setCollection(args.verbose)
 
 if args.collection:
     client.setCollection(args.verbose, args.collection)
@@ -92,3 +92,9 @@ elif args.command == "delete-objects":
         obj_filter = loads(args.filter)
     deletedCount = client.deleteObjects(obj_filter)
     output(deletedCount, f"Deleted '{deletedCount}' documents")
+
+elif args.command == "create-ts-collection":
+    if args.name:
+        client.createTimeseriesCollection(args.name)
+    else:
+        client.createTimeseriesCollection()

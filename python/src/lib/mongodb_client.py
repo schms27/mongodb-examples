@@ -1,9 +1,11 @@
 import pymongo
+from pymongo import errors
 import os
 from dotenv import load_dotenv
 from bson.json_util import dumps, loads
 from bson.objectid import ObjectId
 import gridfs
+from datetime import datetime 
 import h5py
 
 load_dotenv()
@@ -35,10 +37,26 @@ class Client:
             print(f"Using collection: {collectionName}")
         self.collection = self.database[collectionName]
 
+    def createTimeseriesCollection(self, collectionName="timeseries-test-collection"):
+        try:
+            self.database.create_collection(
+               collectionName,
+                timeseries= {
+                    "timeField": "timestamp",
+                    "metaField": "metadata",
+                    "granularity": "seconds"
+                }
+            )
+        except errors.CollectionInvalid as e:
+            print(f"{e}. Continuing")
+
     def initGridFS(self):
         self.fs = gridfs.GridFS(self.database)
 
     def writeObject(self, object):
+        timestamp = datetime.utcnow()
+        print(timestamp)
+        object['timestamp'] = timestamp
         data=loads(dumps(object))
         result = self.collection.insert_one(data)
         return str(result.inserted_id)
